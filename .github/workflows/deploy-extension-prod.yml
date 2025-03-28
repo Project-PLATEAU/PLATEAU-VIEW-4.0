@@ -1,8 +1,10 @@
 name: ⭐️ Deploy PLATEAU Extension production
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   GCS_DEST: gs://plateau-prod-reearth-static-bucket
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-extension:latest
   # used by build
   PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN: ${{ secrets.PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN }}
   # used by build
@@ -22,6 +24,11 @@ jobs:
         working-directory: extension
     steps:
       - uses: actions/checkout@v3
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: google-github-actions/auth@v2
         with:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
@@ -50,3 +57,5 @@ jobs:
         with:
           name: plateauview-extension
           path: extension/plateauview-extension.tar.gz
+      - name: Save to Docker image
+        run: tar -cf - dist | docker import - "$IMAGE" && docker push "$IMAGE"

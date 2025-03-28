@@ -46,6 +46,22 @@ resource "google_cloud_run_v2_service" "plateauview_api" {
         value = var.gcp_region
       }
 
+      dynamic "env" {
+        for_each = var.chiitiler_url != "" ? [""] : []
+        content {
+          name  = "REEARTH_PLATEAUVIEW_CHIITILER_URL"
+          value = var.chiitiler_url
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.chiitiler_bucket != "" ? [""] : []
+        content {
+          name  = "REEARTH_PLATEAUVIEW_CHIITILER_BUCKET"
+          value = var.chiitiler_bucket
+        }
+      }
+
       env {
         name  = "REEARTH_PLATEAUVIEW_CMS_BASEURL"
         value = "https://${local.api_cms_domain}"

@@ -26,6 +26,7 @@ const (
 	PackStatusSucceeded = "succeeded"
 
 	timeoutSignedURL = 10 * time.Minute
+	urlsCountLimit   = 100
 )
 
 type packer struct {
@@ -134,6 +135,8 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 			"error": "no urls provided",
 		})
 	}
+
+	// validate urls
 	for _, citygmlURL := range req.URLs {
 		u, err := url.Parse(citygmlURL)
 		if err != nil {
@@ -149,14 +152,19 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 			})
 		}
 	}
+
+	// sort urls and calculate hash
 	slices.Sort(req.URLs)
+	req.URLs = slices.Compact(req.URLs)
 	checksum := sha256.Sum256([]byte(strings.Join(req.URLs, ",")))
 	hash := hex.EncodeToString(checksum[:])
+
 	var resp struct {
 		ID string `json:"id"`
 	}
 	resp.ID = hash
 
+	// check if the object already exists
 	obj := p.bucket.Object(hash + ".zip").If(storage.Conditions{DoesNotExist: true})
 	w := obj.NewWriter(ctx)
 	w.ObjectAttrs.Metadata = Status(PackStatusAccepted)
@@ -171,18 +179,49 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, resp)
 	}
+
+	// if the number of urls exceeds the limit, write urls to an object
+	urls := req.URLs
+	source := ""
+	if len(req.URLs) > urlsCountLimit {
+		urlsObj := p.bucket.Object(hash + ".txt")
+		w := urlsObj.NewWriter(ctx)
+		for _, u := range req.URLs {
+			_, _ = w.Write([]byte(u + "\n"))
+		}
+		if err := w.Close(); err != nil {
+			log.Errorfc(ctx, "citygml: packer: failed to write urls: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"error": "failed to write urls",
+			})
+		}
+
+		urls = nil
+		source = toURL(urlsObj)
+	}
+
+	// enqueue pack job
 	packReq := PackAsyncRequest{
 		Dest:    toURL(obj),
 		Domain:  p.conf.Domain,
-		URLs:    req.URLs,
+		URLs:    urls,
+		Source:  source,
 		Timeout: time.Duration(p.conf.PackerTimeout) * time.Second,
 	}
+
 	if err := p.packAsync(ctx, packReq); err != nil {
-		log.Errorfc(ctx, "citygml: packer: failed to write metadata: %v", err)
+		log.Errorfc(ctx, "citygml: packer: failed to enqueue pack job: %v", err)
+
+		// delete object to prevent orphaned objects
+		if err := obj.Delete(ctx); err != nil {
+			log.Errorfc(ctx, "citygml: packer: failed to delete object: %v", err)
+		}
+
 		return c.JSON(http.StatusInternalServerError, map[string]any{
 			"error": "failed to enqueue pack job",
 		})
 	}
+
 	return c.JSON(http.StatusOK, resp)
 }
 
@@ -193,8 +232,18 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 		}
 	}
 
-	urls := strings.Join(req.URLs, ",")
-	log.Debugfc(ctx, "citygml: packer: enqueue pack job: dest=%s, domain=%s, urls=%s", req.Dest, req.Domain, urls)
+	log.Debugfc(ctx, "citygml: packer: enqueue pack job: dest=%s, domain=%s, urls=%d", req.Dest, req.Domain, len(req.URLs))
+
+	args := []string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}
+	if req.Timeout > 0 {
+		args = append(args, "-timeout", req.Timeout.String())
+	}
+	if req.Source != "" {
+		args = append(args, "-source", req.Source)
+	}
+	if len(req.URLs) > 0 {
+		args = append(args, strings.Join(req.URLs, ","))
+	}
 
 	build := &cloudbuild.Build{
 		Timeout:  "86400s", // 1 day
@@ -202,7 +251,7 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 		Steps: []*cloudbuild.BuildStep{
 			{
 				Name: p.conf.CityGMLPackerImage,
-				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain, "-timeout", req.Timeout.String()}, urls),
+				Args: args,
 			},
 		},
 		Tags: []string{"citygml-packer"},
@@ -243,6 +292,7 @@ func toURL(obj *storage.ObjectHandle) string {
 type PackAsyncRequest struct {
 	Dest    string        `json:"dest"`
 	Domain  string        `json:"domain"`
+	Timeout time.Duration `json:"timeout,omitempty"`
+	Source  string        `json:"source"`
 	URLs    []string      `json:"urls"`
-	Timeout time.Duration `json:"timeout"`
 }

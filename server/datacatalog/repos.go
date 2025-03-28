@@ -19,6 +19,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
+	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -125,7 +126,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		conditions := c.Param(conditionsParamName)
 
-		cityIDs, filter, err := ParseCityGMLFilesQuery(ctx, conditions, h.qt, geocoder)
+		bounds, filter, err := ParseCityGMLFilesQuery(ctx, conditions, geocoder)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return echo.NewHTTPError(http.StatusNotFound, "not found")
@@ -133,6 +134,12 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 
 			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
+
+		var cityIDs []string
+		for _, b := range bounds {
+			cityIDs = append(cityIDs, h.qt.FindRect(b.QBounds())...)
+		}
+		cityIDs = lo.Uniq(cityIDs)
 
 		merged, err := h.prepareMergedRepo(c, admin)
 		if err != nil {
@@ -154,7 +161,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 			cities = append(cities, cityGMLFiles)
 		}
 
-		res := ApplyCityGMLCityFilter(ctx, cities, filter)
+		res := applyCityGMLCityFilter(cities, filter)
 		if len(res.Cities) == 0 {
 			return echo.NewHTTPError(http.StatusNotFound, "not found")
 		}

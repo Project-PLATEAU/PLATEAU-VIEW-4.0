@@ -4,6 +4,18 @@ variable "ckan_token" {
   sensitive   = true
 }
 
+variable "chiitiler_url" {
+  type        = string
+  default     = ""
+  description = "chiitierのURL"
+}
+
+variable "chiitiler_bucket" {
+  type        = string
+  default     = ""
+  description = "chiitierのキャッシュ用バケット名"
+}
+
 variable "domain" {
   type        = string
   description = "PLATEAU VIEWを提供するドメイン名"

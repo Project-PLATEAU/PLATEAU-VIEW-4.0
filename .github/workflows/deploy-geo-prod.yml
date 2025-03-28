@@ -1,5 +1,6 @@
 name: ⭐️ Deploy PLATEAU Geo production
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-geo:latest

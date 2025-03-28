@@ -40,3 +40,13 @@ module "auth0_editor" {
   identifier_domain = local.editor_api_domain
   signup_name       = "signup-reearth"
 }
+
+module "auth0_flow" {
+  source = "./modules/auth0"
+
+  spa_name          = "plateau-flow-spa"
+  m2m_name          = "plateau-flow-m2m"
+  login_domain      = local.flow_domain
+  identifier_domain = local.flow_api_domain
+  signup_name       = "signup-reearth"
+}

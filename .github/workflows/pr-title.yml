@@ -44,10 +44,10 @@ jobs:
           fetch-depth: 0
       - name: changed files for plugin
         id: plugin
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: step-security/changed-files@3dbe17c78367e7d60f00d78ae6781a35be47b4a1 # v45.0.1
         with:
           files: |
-            plugin
+            plugin/**
   pr_scope_check:
     needs: contains_plugin_changes
     if: ${{ !failure() && needs.contains_plugin_changes.outputs.plugin == 'true' }}

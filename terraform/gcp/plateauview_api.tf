@@ -1,6 +1,8 @@
 module "plateauview_api" {
   source = "./modules/plateauview_api"
 
+  chiitiler_bucket      = module.chiitiler.bucket
+  chiitiler_url         = module.chiitiler.url
   ckan_token            = var.ckan_token
   domain                = var.domain
   fme_token             = var.fme_token

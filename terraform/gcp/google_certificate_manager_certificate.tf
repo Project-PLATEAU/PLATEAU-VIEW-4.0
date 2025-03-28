@@ -1,15 +1,49 @@
-resource "google_certificate_manager_certificate" "plateau_reearth" {
+resource "google_certificate_manager_certificate" "accounts" {
   project = data.google_project.project.project_id
-  name    = "plateau-reearth"
+
+  name        = "accounts"
+  description = "Accounts certificates"
+
+  managed {
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.accounts.id,
+    ]
+
+    domains = [
+      google_certificate_manager_dns_authorization.accounts.domain,
+      "*.${google_certificate_manager_dns_authorization.accounts.domain}"
+    ]
+  }
+}
+
+resource "google_certificate_manager_certificate" "cerbos" {
+  project = data.google_project.project.project_id
+
+  name        = "cerbos"
+  description = "Cerbos certificates"
+
+  managed {
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.cerbos.id,
+    ]
+
+    domains = [
+      google_certificate_manager_dns_authorization.cerbos.domain,
+    ]
+  }
+}
+
+resource "google_certificate_manager_certificate" "plateau_api" {
+  project = data.google_project.project.project_id
+  name    = "plateau-api"
 
   managed {
     domains = [
-      google_certificate_manager_dns_authorization.plateau_reearth.domain,
-      "*.${google_certificate_manager_dns_authorization.plateau_reearth.domain}"
+      google_certificate_manager_dns_authorization.plateau_api.domain,
     ]
 
     dns_authorizations = [
-      google_certificate_manager_dns_authorization.plateau_reearth.id,
+      google_certificate_manager_dns_authorization.plateau_api.id,
     ]
   }
 }
@@ -47,17 +81,20 @@ resource "google_certificate_manager_certificate" "plateau_editor" {
   }
 }
 
-resource "google_certificate_manager_certificate" "plateau_tiles" {
+resource "google_certificate_manager_certificate" "plateau_flow" {
   project = data.google_project.project.project_id
-  name    = "plateau-tiles"
+
+  name        = "plateau-flow"
+  description = "Plateau Flow certificates"
 
   managed {
-    domains = [
-      google_certificate_manager_dns_authorization.plateau_tiles.domain,
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.plateau_flow.id,
     ]
 
-    dns_authorizations = [
-      google_certificate_manager_dns_authorization.plateau_tiles.id,
+    domains = [
+      google_certificate_manager_dns_authorization.plateau_flow.domain,
+      "*.${google_certificate_manager_dns_authorization.plateau_flow.domain}"
     ]
   }
 }
@@ -77,17 +114,33 @@ resource "google_certificate_manager_certificate" "plateau_geo" {
   }
 }
 
-resource "google_certificate_manager_certificate" "plateau_api" {
+resource "google_certificate_manager_certificate" "plateau_reearth" {
   project = data.google_project.project.project_id
-  name    = "plateau-api"
+  name    = "plateau-reearth"
 
   managed {
     domains = [
-      google_certificate_manager_dns_authorization.plateau_api.domain,
+      google_certificate_manager_dns_authorization.plateau_reearth.domain,
+      "*.${google_certificate_manager_dns_authorization.plateau_reearth.domain}"
     ]
 
     dns_authorizations = [
-      google_certificate_manager_dns_authorization.plateau_api.id,
+      google_certificate_manager_dns_authorization.plateau_reearth.id,
+    ]
+  }
+}
+
+resource "google_certificate_manager_certificate" "plateau_tiles" {
+  project = data.google_project.project.project_id
+  name    = "plateau-tiles"
+
+  managed {
+    domains = [
+      google_certificate_manager_dns_authorization.plateau_tiles.domain,
+    ]
+
+    dns_authorizations = [
+      google_certificate_manager_dns_authorization.plateau_tiles.id,
     ]
   }
 }

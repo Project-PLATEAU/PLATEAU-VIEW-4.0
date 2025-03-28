@@ -1,5 +1,6 @@
 name: ⭐️ Deploy reearth visualizer dev
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   # TODO: allow to specify version of reearth

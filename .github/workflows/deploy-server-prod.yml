@@ -1,5 +1,6 @@
 name: ⭐️ Deploy PLATEAU Server production
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-api:latest

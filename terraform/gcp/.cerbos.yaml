@@ -1,0 +1,18 @@
+server:
+  # Cloud Run contract's environment variable
+  # Ref: https://cloud.google.com/run/docs/container-contract#services-env-vars
+  httpListenAddr: ":${PORT:3593}"
+  grpcListenAddr: ":${PORT:3593}"
+
+engine:
+  defaultPolicyVersion: "default"
+
+auxData:
+  jwt:
+    disableVerification: true
+
+storage:
+  driver: "disk"
+  disk:
+    directory: "/policies"
+    watchForChanges: true

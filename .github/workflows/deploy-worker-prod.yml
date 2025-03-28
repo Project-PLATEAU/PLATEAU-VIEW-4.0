@@ -1,7 +1,7 @@
 name: ⭐️ Deploy PLATEAU Worker production
 on:
-  workflow_dispatch:
   workflow_call:
+  workflow_dispatch:
 env:
   IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-api-worker:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/plateauview-api-worker:latest

@@ -1,5 +1,6 @@
 name: ⭐️ Deploy PLATEAU Tiles dev
 on:
+  workflow_call:
   workflow_dispatch:
   repository_dispatch:
     types: [deploy-tiles-dev]
@@ -29,19 +30,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download tiles artifacts
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: ci.yml
-          workflow_conclusion: success
-          branch: main
-          name: plateauview-tiles
-          check_artifacts: true
-      - name: Unpack docker image
-        run: docker load < plateauview-tiles.tar.gz
+      - name: docker pull
+        run: docker pull $IMAGE
       - name: docker push
         run: |
-          docker tag $IMAGE $IMAGE_GCP && \
-          docker push $IMAGE &&
+          docker tag $IMAGE $IMAGE_GCP
           docker push $IMAGE_GCP

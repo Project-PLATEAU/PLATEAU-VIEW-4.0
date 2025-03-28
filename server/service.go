@@ -57,7 +57,8 @@ func Services(conf *Config) (srv []*Service, _ error) {
 
 func OpenAPI(*Config) (*Service, error) {
 	return &Service{
-		Name: "openapi",
+		Name:           "openapi",
+		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
 			return openapi.Handler(g)
 		},
@@ -136,8 +137,7 @@ func Sidebar(conf *Config) (*Service, error) {
 	}
 
 	return &Service{
-		Name:           "sidebar",
-		DisableNoCache: true,
+		Name: "sidebar",
 		Echo: func(g *echo.Group) error {
 			return util.Try(
 				func() error { return sidebar.Echo(g.Group("/sidebar"), c) },
@@ -167,7 +167,8 @@ func DataCatalog(conf *Config) (*Service, error) {
 
 func GovPolygon(conf *Config) (*Service, error) {
 	return &Service{
-		Name: "govpolygon",
+		Name:           "govpolygon",
+		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
 			govpolygon.New(
 				conf.LocalURL("/datacatalog/graphql"),
@@ -180,14 +181,16 @@ func GovPolygon(conf *Config) (*Service, error) {
 
 func Tiles(conf *Config) (*Service, error) {
 	return &Service{
-		Name: "tiles",
+		Name:           "tiles",
+		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
-			h, err := tiles.New(conf.Tiles())
+			ctx := context.Background()
+			h, err := tiles.New(ctx, conf.Tiles())
 			if err != nil {
 				return err
 			}
 
-			h.Route(g.Group(""))
+			h.Route(g)
 			h.Init(context.Background())
 			return nil
 		},

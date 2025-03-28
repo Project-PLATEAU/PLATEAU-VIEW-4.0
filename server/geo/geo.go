@@ -73,9 +73,31 @@ func (b Bounds2) QBounds() quadtree.Bounds {
 	}
 }
 
-func (b Bounds2) IsIntersect(b2 Bounds2) bool {
-	return b.Min.X <= b2.Max.X && b.Max.X >= b2.Min.X &&
-		b.Min.Y <= b2.Max.Y && b.Max.Y >= b2.Min.Y
+func (b Bounds2) Intersects(b2 Bounds2) bool {
+	if b == b2 {
+		return true
+	}
+
+	// 軸方向で完全に外なら false
+	if b.Max.X <= b2.Min.X || b.Min.X >= b2.Max.X ||
+		b.Max.Y <= b2.Min.Y || b.Min.Y >= b2.Max.Y {
+		return false
+	}
+
+	// b の任意の頂点が b2 内部にある
+	if b2.In(b.Min) || b2.In(b.Max) ||
+		b2.In(Point2{b.Min.X, b.Max.Y}) || b2.In(Point2{b.Max.X, b.Min.Y}) {
+		return true
+	}
+
+	// b2 の任意の頂点が b 内部にある
+	if b.In(b2.Min) || b.In(b2.Max) ||
+		b.In(Point2{b2.Min.X, b2.Max.Y}) || b.In(Point2{b2.Max.X, b2.Min.Y}) {
+		return true
+	}
+
+	// 辺が接しているだけの場合（どちらの頂点も中にない）
+	return false
 }
 
 func (b Bounds2) In(p Point2) bool {

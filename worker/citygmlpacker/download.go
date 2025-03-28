@@ -38,6 +38,7 @@ func (d *Download) CloseWithError(err error) error {
 
 func (d *Download) Download(client *http.Client) bool {
 	bw := bufio.NewWriterSize(d.pw, 2*1024*1024)
+
 	resp, err := client.Do(d.req)
 	if err != nil {
 		_ = d.CloseWithError(err)

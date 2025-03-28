@@ -36,6 +36,7 @@ func (p *Packer) writeZip(ctx context.Context, u *url.URL, pctx *packerContext) 
 		return nil // skip
 	}
 
+	log.Infofc(ctx, "downloading... %s", ustr)
 	body, err := httpGet(ctx, p.httpClient, ustr)
 	if body != nil {
 		defer body.Close()
@@ -43,8 +44,6 @@ func (p *Packer) writeZip(ctx context.Context, u *url.URL, pctx *packerContext) 
 	if err != nil {
 		return fmt.Errorf("get: %w", err)
 	}
-
-	log.Infofc(ctx, "downloading %s", ustr)
 
 	zz := workerutil.NewZip2zip(pctx.zw).SkipMkdir(true)
 	err = workerutil.DownloadAndConsumeZip(ctx, ustr, p.cachedir, func(zr *zip.Reader, fi os.FileInfo) error {

@@ -34,6 +34,7 @@ func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) 
 	depsMap := map[string]struct{}{}
 	ustr := u.String()
 
+	log.Infof("downloading... %s", ustr)
 	body, err := httpGet(ctx, p.httpClient, ustr)
 	if body != nil {
 		defer body.Close()
@@ -41,7 +42,7 @@ func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) 
 	if err != nil {
 		return fmt.Errorf("get: %w", err)
 	}
-	if u == nil {
+	if body == nil {
 		log.Warnf("skipped download: %s", ustr)
 		return nil // skip
 	}
@@ -66,7 +67,7 @@ func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) 
 
 	deps := depsMapToSlice(depsMap, pctx.seen, u)
 
-	log.Infof("completed %s (%d deps)", ustr, len(deps))
+	log.Infof("%d deps detected from %s", ustr, len(deps), ustr)
 
 	p.p.AddDep(int64(len(deps)))
 	defer p.p.DepEnd()
@@ -94,11 +95,18 @@ func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) 
 					<-sem
 				}()
 
+				log.Infof("downloading... %s", d.URL())
 				if d.Download(p.httpClient) {
-					log.Infof("downloaded: %s", d.URL())
-				} else if d.Err() == nil {
-					log.Warnf("skipped download: %s", d.URL())
+					return
 				}
+
+				err := d.Err()
+				if err == nil {
+					log.Warnf("skipped download: %s", d.URL())
+					return
+				}
+
+				log.Errorf("failed to download: %s: %v", d.URL(), err)
 			}()
 		}
 	}()

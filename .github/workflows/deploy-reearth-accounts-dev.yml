@@ -1,5 +1,6 @@
 name: 👥 Deploy Re:Earth Accounts dev
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   IMAGE_NAME: reearth/reearth-accounts-api:nightly

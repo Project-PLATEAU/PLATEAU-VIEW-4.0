@@ -1,3 +1,41 @@
+resource "google_compute_url_map" "cerbos" {
+  project = data.google_project.project.project_id
+
+  name        = "cerbos"
+  description = "Url map for Cerbos"
+
+  default_service = google_compute_backend_service.cerbos.id
+
+  host_rule {
+    hosts        = [local.cerbos_domain]
+    path_matcher = "cerbos"
+  }
+
+  path_matcher {
+    name            = "cerbos"
+    default_service = google_compute_backend_service.cerbos.id
+  }
+}
+
+resource "google_compute_url_map" "accounts" {
+  project = data.google_project.project.project_id
+
+  name        = "reearth-accounts"
+  description = "Url map for Accounts"
+
+  default_service = google_compute_backend_service.accounts_api.id
+
+  host_rule {
+    hosts        = ["api.${local.accounts_domain}"]
+    path_matcher = "api"
+  }
+
+  path_matcher {
+    name            = "api"
+    default_service = google_compute_backend_service.accounts_api.id
+  }
+}
+
 resource "google_compute_url_map" "plateau_cms" {
   project = data.google_project.project.project_id
 
@@ -209,5 +247,54 @@ resource "google_compute_url_map" "plateau_api" {
   path_matcher {
     name            = "allpaths"
     default_service = google_compute_backend_service.plateau_api.id
+  }
+}
+
+resource "google_compute_url_map" "plateau_flow" {
+  project = data.google_project.project.project_id
+
+  name        = "plateau-flow"
+  description = "Url map for PLATEAU Flow"
+
+  default_service = google_compute_backend_service.plateau_flow_api.id
+
+  host_rule {
+    hosts        = [local.flow_api_domain]
+    path_matcher = "api"
+  }
+
+  path_matcher {
+    name            = "api"
+    default_service = google_compute_backend_service.plateau_flow_api.id
+  }
+
+  host_rule {
+    hosts        = [local.flow_subscriber_domain]
+    path_matcher = "subscriber"
+  }
+
+  path_matcher {
+    name            = "subscriber"
+    default_service = google_compute_backend_service.plateau_flow_subscriber.id
+  }
+
+  host_rule {
+    hosts        = [local.flow_domain]
+    path_matcher = "web"
+  }
+
+  path_matcher {
+    name            = "web"
+    default_service = google_compute_backend_service.plateau_flow_web.id
+  }
+
+  host_rule {
+    hosts        = [local.flow_websocket_domain]
+    path_matcher = "websocket"
+  }
+
+  path_matcher {
+    name            = "websocket"
+    default_service = google_compute_backend_service.plateau_flow_websocket.id
   }
 }

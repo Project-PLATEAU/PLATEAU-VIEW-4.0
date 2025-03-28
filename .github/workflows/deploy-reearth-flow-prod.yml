@@ -1,5 +1,6 @@
 name: 🌊 Deploy Re:earth Flow Production Environment
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       web_run_id:
@@ -49,7 +50,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: ${{ !github.event.inputs.web_run_id && github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ !inputs.web_run_id && inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -82,7 +83,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -115,7 +116,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -148,7 +149,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -181,7 +182,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:

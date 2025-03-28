@@ -1,3 +1,9 @@
+resource "google_service_account" "accounts_api" {
+  project      = data.google_project.project.project_id
+  account_id   = "accounts-api"
+  display_name = "accounts-api"
+}
+
 resource "google_service_account" "plateauview_api" {
   project      = data.google_project.project.project_id
   account_id   = "plateauview-api"
@@ -10,6 +16,17 @@ resource "google_service_account" "plateauview_geo" {
   display_name = "plateauview-geo"
 }
 
+resource "google_service_account" "cerbos" {
+  project      = data.google_project.project.project_id
+  account_id   = "cerbos"
+  display_name = "cerbos"
+}
+
+resource "google_service_account" "chiitiler" {
+  project      = data.google_project.project.project_id
+  account_id   = "chiitiler"
+  display_name = "chiitiler"
+}
 
 resource "google_service_account" "cms_api" {
   project      = data.google_project.project.project_id
@@ -51,4 +68,34 @@ resource "google_service_account" "editor_web" {
   project      = data.google_project.project.project_id
   account_id   = "editor-web"
   display_name = "editor-web"
+}
+
+resource "google_service_account" "plateau_flow_api" {
+  project      = data.google_project.project.project_id
+  account_id   = "reearth-flow-api"
+  display_name = "reearth-flow-api"
+}
+
+resource "google_service_account" "plateau_flow_subscriber" {
+  project      = data.google_project.project.project_id
+  account_id   = "reearth-flow-subscriber"
+  display_name = "reearth-flow-subscriber"
+}
+
+resource "google_service_account" "plateau_flow_web" {
+  project      = data.google_project.project.project_id
+  account_id   = "reearth-flow-web"
+  display_name = "reearth-flow-web"
+}
+
+resource "google_service_account" "plateau_flow_websocket" {
+  project      = data.google_project.project.project_id
+  account_id   = "reearth-flow-websocket"
+  display_name = "reearth-flow-websocket"
+}
+
+resource "google_service_account" "plateau_flow_worker_batch" {
+  project      = data.google_project.project.project_id
+  account_id   = "reearth-flow-worker-batch"
+  display_name = "reearth-flow-worker-batch"
 }

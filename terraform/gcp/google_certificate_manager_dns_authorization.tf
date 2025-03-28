@@ -1,3 +1,19 @@
+resource "google_certificate_manager_dns_authorization" "cerbos" {
+  project = data.google_project.project.project_id
+
+  description = "Cerbos"
+  domain      = local.cerbos_domain
+  name        = "cerbos"
+}
+
+resource "google_certificate_manager_dns_authorization" "accounts" {
+  project = data.google_project.project.project_id
+
+  description = "Accounts"
+  domain      = local.accounts_domain
+  name        = "accounts"
+}
+
 resource "google_certificate_manager_dns_authorization" "plateau_reearth" {
   project = data.google_project.project.project_id
   name    = "wildcard-dns-auth"
@@ -32,4 +48,12 @@ resource "google_certificate_manager_dns_authorization" "plateau_api" {
   project = data.google_project.project.project_id
   name    = "plateau-api"
   domain  = local.plateauview_api_domain
+}
+
+resource "google_certificate_manager_dns_authorization" "plateau_flow" {
+  project = data.google_project.project.project_id
+
+  description = "Plateau Flow"
+  domain      = local.flow_domain
+  name        = "plateau-flow"
 }

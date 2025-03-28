@@ -357,6 +357,14 @@ type DeleteAssetPayload struct {
 	AssetID ID `json:"assetId"`
 }
 
+type DeleteAssetsInput struct {
+	AssetIds []ID `json:"assetIds"`
+}
+
+type DeleteAssetsPayload struct {
+	AssetIds []ID `json:"assetIds,omitempty"`
+}
+
 type DeleteCommentInput struct {
 	ThreadID  ID `json:"threadId"`
 	CommentID ID `json:"commentId"`
@@ -819,6 +827,14 @@ type PublishModelInput struct {
 type PublishModelPayload struct {
 	ModelID ID   `json:"modelId"`
 	Status  bool `json:"status"`
+}
+
+type PublishModelsInput struct {
+	Models []*PublishModelInput `json:"models"`
+}
+
+type PublishModelsPayload struct {
+	Models []*PublishModelPayload `json:"models"`
 }
 
 type Query struct {

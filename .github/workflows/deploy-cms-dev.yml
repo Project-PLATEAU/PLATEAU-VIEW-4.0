@@ -1,5 +1,6 @@
 name: ⭐️ Deploy CMS dev
 on:
+  workflow_call:
   workflow_dispatch:
 env:
   CMS_IMAGE_NAME: reearth/reearth-cms:rc

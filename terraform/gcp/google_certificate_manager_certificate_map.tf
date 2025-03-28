@@ -1,6 +1,20 @@
-resource "google_certificate_manager_certificate_map" "plateau_reearth" {
+resource "google_certificate_manager_certificate_map" "accounts" {
   project = data.google_project.project.project_id
-  name    = "plateau-reearth"
+
+  description = "Accounts"
+  name        = "accounts"
+}
+
+resource "google_certificate_manager_certificate_map" "cerbos" {
+  project = data.google_project.project.project_id
+
+  description = "Cerbos"
+  name        = "cerbos"
+}
+
+resource "google_certificate_manager_certificate_map" "plateau_api" {
+  project = data.google_project.project.project_id
+  name    = "plateau-api"
 }
 
 resource "google_certificate_manager_certificate_map" "plateau_cms" {
@@ -13,9 +27,11 @@ resource "google_certificate_manager_certificate_map" "plateau_editor" {
   name    = "plateau-editor"
 }
 
-resource "google_certificate_manager_certificate_map" "plateau_tiles" {
+resource "google_certificate_manager_certificate_map" "plateau_flow" {
   project = data.google_project.project.project_id
-  name    = "plateau-tiles"
+
+  description = "Plateau Flow"
+  name        = "plateau-flow"
 }
 
 resource "google_certificate_manager_certificate_map" "plateau_geo" {
@@ -23,7 +39,12 @@ resource "google_certificate_manager_certificate_map" "plateau_geo" {
   name    = "plateau-geo"
 }
 
-resource "google_certificate_manager_certificate_map" "plateau_api" {
+resource "google_certificate_manager_certificate_map" "plateau_reearth" {
   project = data.google_project.project.project_id
-  name    = "plateau-api"
+  name    = "plateau-reearth"
+}
+
+resource "google_certificate_manager_certificate_map" "plateau_tiles" {
+  project = data.google_project.project.project_id
+  name    = "plateau-tiles"
 }

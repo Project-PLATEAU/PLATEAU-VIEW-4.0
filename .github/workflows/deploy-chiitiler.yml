@@ -1,0 +1,68 @@
+name: ⭐️ Deploy Chiitiler
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment
+        required: true
+        default: prod
+        options:
+          # - dev # dev is not used now
+          - prod
+env:
+  CHIITILER_IMAGE: ghcr.io/kanahiro/chiitiler:latest
+  CHIITILER_IMAGE_HUB: eukarya/plateauview-chiitiler:latest
+  CHIITILER_IMAGE_DEV: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/chiitiler:latest
+  CHIITILER_IMAGE_PROD: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/chiitiler:latest
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  deploy_chiitiler:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      - name: Configure docker
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Pull docker images
+        run: docker pull $CHIITILER_IMAGE
+      - name: Push docker images to dev
+        if: ${{ inputs.environment == 'dev' }}
+        run: |
+          docker tag $CHIITILER_IMAGE $CHIITILER_IMAGE_DEV
+          docker push $CHIITILER_IMAGE_DEV
+      - name: Push docker images to prod
+        if: ${{ inputs.environment == 'prod' }}
+        run: |
+          docker tag $CHIITILER_IMAGE $CHIITILER_IMAGE_PROD
+          docker push $CHIITILER_IMAGE_PROD
+          docker tag $CHIITILER_IMAGE $CHIITILER_IMAGE_HUB
+          docker push $CHIITILER_IMAGE_HUB
+      - name: Deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: chiitiler
+          image: ${{ inputs.environment == 'prod' && env.CHIITILER_IMAGE_PROD || env.CHIITILER_IMAGE_DEV }}
+          region: asia-northeast1

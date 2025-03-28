@@ -1,6 +1,7 @@
 package citygmlpacker
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -18,23 +19,50 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
-func Run(conf Config) (err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
-	defer cancel()
+const defaultTimeout = 15 * time.Minute
 
-	startedAt := time.Now().Format(time.RFC3339Nano)
+func Run(conf Config) (err error) {
+	if conf.Timeout <= 0 {
+		conf.Timeout = defaultTimeout
+	}
+
+	log.Printf("timeout: %s", conf.Timeout)
+	bgctx := context.Background()
 
 	destURL, err := url.Parse(conf.Dest)
 	if err != nil {
 		return fmt.Errorf("invalid destination bucket(%s): %w", conf.Dest, err)
 	}
+	if destURL.Scheme != "gs" {
+		return fmt.Errorf("invalid destination bucket(%s): must be gs://", conf.Dest)
+	}
 
-	gcs, err := storage.NewClient(ctx)
+	var sourceURL *url.URL
+	if conf.Source != "" {
+		sourceURL, err = url.Parse(conf.Source)
+		if err != nil {
+			return fmt.Errorf("invalid source bucket(%s): %w", conf.Source, err)
+		}
+		if sourceURL.Scheme != "gs" {
+			return fmt.Errorf("invalid source bucket(%s): must be gs://", conf.Source)
+		}
+	}
+
+	gcs, err := storage.NewClient(bgctx)
 	if err != nil {
 		return fmt.Errorf("storage.NewClient: %v", err)
 	}
 
+	urls, err := resolveURLs(bgctx, gcs, conf.URLs, sourceURL)
+	if err != nil {
+		return fmt.Errorf("resolve URLs: %w", err)
+	}
+
+	log.Printf("resolved urls:\n%s", strings.Join(urls, "\n"))
+
 	obj := gcs.Bucket(destURL.Host).Object(path.Join(strings.TrimPrefix(destURL.Path, "/")))
+
+	startedAt := time.Now().Format(time.RFC3339Nano)
 
 	defer func() {
 		if err == nil {
@@ -42,7 +70,8 @@ func Run(conf Config) (err error) {
 		}
 		metadata := citygml.Status(PackStatusFailed)
 		metadata["startedAt"] = startedAt
-		_, uErr := obj.Update(ctx, storage.ObjectAttrsToUpdate{
+		// Use background context for metadata update to avoid timeout issues
+		_, uErr := obj.Update(bgctx, storage.ObjectAttrsToUpdate{
 			Metadata: metadata,
 		})
 		if uErr != nil {
@@ -50,7 +79,7 @@ func Run(conf Config) (err error) {
 		}
 	}()
 
-	attrs, err := obj.Attrs(ctx)
+	attrs, err := obj.Attrs(bgctx)
 	if err != nil {
 		return fmt.Errorf("get metadata: %v", err)
 	}
@@ -63,7 +92,7 @@ func Run(conf Config) (err error) {
 	metadata["startedAt"] = startedAt
 	{
 		_, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
-			Update(ctx, storage.ObjectAttrsToUpdate{Metadata: metadata})
+			Update(bgctx, storage.ObjectAttrsToUpdate{Metadata: metadata})
 
 		if err != nil {
 			var gErr *googleapi.Error
@@ -75,12 +104,14 @@ func Run(conf Config) (err error) {
 		}
 	}
 
-	w := obj.NewWriter(ctx)
+	w := obj.NewWriter(bgctx)
 	completedMetadata := status(PackStatusSucceeded)
 	completedMetadata["startedAt"] = startedAt
 	w.ObjectAttrs.Metadata = completedMetadata
 	defer w.Close()
 
+	ctx, cancel := context.WithTimeout(bgctx, conf.Timeout)
+	defer cancel()
 	p := NewPacker(w, nil)
 
 	var finished bool
@@ -115,7 +146,7 @@ func Run(conf Config) (err error) {
 		}
 	}()
 
-	if err := p.Pack(ctx, conf.Domain, conf.URLs); err != nil {
+	if err := p.Pack(ctx, conf.Domain, urls); err != nil {
 		return fmt.Errorf("pack: %w", err)
 	}
 	finishedMu.Lock()
@@ -125,4 +156,32 @@ func Run(conf Config) (err error) {
 	}
 	finished = true
 	return nil
+}
+
+func resolveURLs(ctx context.Context, gcs *storage.Client, urls []string, source *url.URL) ([]string, error) {
+	if source == nil {
+		return urls, nil
+	}
+
+	obj := gcs.Bucket(source.Host).Object(path.Join(strings.TrimPrefix(source.Path, "/")))
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("open source file: %w", err)
+	}
+
+	defer r.Close()
+
+	var resolved []string
+	sc := bufio.NewScanner(r)
+	for sc.Scan() {
+		txt := sc.Text()
+		if txt == "" {
+			continue
+		}
+		resolved = append(resolved, txt)
+	}
+	if err := sc.Err(); err != nil {
+		return nil, fmt.Errorf("read source file: %w", err)
+	}
+	return resolved, nil
 }
