@@ -470,6 +470,12 @@ paths:
           schema:
             type: string
           description: カンマ区切りの空間ID
+        - name: skip_code_list_fetch
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: 属性のコードリストを取得しない場合はtrueを指定。デフォルトはfalse。
         - name: type
           in: query
           required: true

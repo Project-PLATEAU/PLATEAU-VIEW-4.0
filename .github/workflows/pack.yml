@@ -1,6 +1,17 @@
 name: Pack
 on:
   workflow_dispatch:
+    inputs:
+      update:
+        description: 'Update which products?'
+        type: choice
+        options:
+          - no-update
+          - visualizer
+          - cms
+          - flow
+          - all
+
 jobs:
   pack:
     runs-on: ubuntu-latest
@@ -25,24 +36,42 @@ jobs:
           mv PLATEAU-VIEW-main/* plateau/
           rmdir PLATEAU-VIEW-main
           rm main.zip
+      - name: Extract previous PLATEAU-VIEW zip
+        run: |
+          curl -LO https://github.com/eukarya-inc/PLATEAU-VIEW/archive/refs/heads/plateau.zip
+          unzip plateau.zip
+          mv PLATEAU-VIEW-plateau plateau-old
+          rm plateau.zip
       - name: Extract Re:Earth Visualizer zip
+        if: ${{ inputs.update == 'visualizer' || inputs.update == 'all' }}
         run: |
           curl -LO https://github.com/reearth/reearth-visualizer/archive/refs/heads/main.zip
           unzip main.zip
           mv reearth-visualizer-main plateau/editor
           rm main.zip
+      - name: Extract previous Re:Earth Visualizer zip
+        if: ${{ inputs.update != 'visualizer' && inputs.update != 'all' }}
+        run: mv plateau-old/editor plateau/editor
       - name: Extract Re:Earth CMS zip
+        if: ${{ inputs.update == 'cms' || inputs.update == 'all' }}
         run: |
           curl -LO https://github.com/reearth/reearth-cms/archive/refs/heads/main.zip
           unzip main.zip
           mv reearth-cms-main plateau/cms
           rm main.zip
+      - name: Extract previous Re:Earth CMS zip
+        if: ${{ inputs.update != 'cms' && inputs.update != 'all' }}
+        run: mv plateau-old/cms plateau/cms
       - name: Extract Re:Earth Flow zip
+        if: ${{ inputs.update == 'flow' || inputs.update == 'all' }}
         run: |
           curl -LO https://github.com/reearth/reearth-flow/archive/refs/heads/main.zip
           unzip main.zip
           mv reearth-flow-main plateau/flow
           rm main.zip
+      - name: Extract previous Re:Earth Flow zip
+        if: ${{ inputs.update != 'flow' && inputs.update != 'all' }}
+        run: mv plateau-old/flow plateau/flow
       - run: tree -a
       - name: Commit and push
         working-directory: plateau

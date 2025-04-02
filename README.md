@@ -9,7 +9,7 @@ PLATEAU VIEW 4.0 は以下のシステムにより構成されます。
 - **PLATEAU Flow**: PLATEAU のデータ変換や品質検査のワークフローを構築・実行する Web アプリケーション。
 - **PLATEAU VIEW**: PLATEAU をはじめとする様々なデータセットの可視化が可能な Web アプリケーション。
 
-システムの詳細な仕様は、[PLATEAU VIEW 構築マニュアル](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver04.pdf)を、PLATEAUが配信しているAPIの詳細については、[PLATEAU配信サービス](https://github.com/Project-PLATEAU/plateau-streaming-tutorial)を参照してください。
+システムの詳細な仕様は、[PLATEAU VIEW 構築マニュアル](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver05.pdf)を、PLATEAUが配信しているAPIの詳細については、[PLATEAU配信サービス](https://github.com/Project-PLATEAU/plateau-streaming-tutorial)を参照してください。
 
 ## フォルダ構成
 

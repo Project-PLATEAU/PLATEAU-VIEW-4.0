@@ -1,4 +1,4 @@
-package main
+package proxy
 
 import (
 	"net/http"
@@ -9,7 +9,16 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func proxyHandlerFunc(c echo.Context) error {
+func Route(g *echo.Group) {
+	g.GET("/*", Hanlder)
+}
+
+func Hanlder(c echo.Context) error {
+	c.Response().Before(func() {
+		c.Response().Header().Set(echo.HeaderAccessControlAllowOrigin,
+			c.Request().Header.Get(echo.HeaderOrigin))
+	})
+
 	// Extract the target URL from the request path
 	targetPath := c.Param("*")
 
@@ -47,18 +56,4 @@ func proxyHandlerFunc(c echo.Context) error {
 	}
 
 	return nil
-}
-
-func setResponseACAOHeaderFromRequest(c echo.Context) {
-	c.Response().Header().Set(echo.HeaderAccessControlAllowOrigin,
-		c.Request().Header.Get(echo.HeaderOrigin))
-}
-
-func ACAOHeaderOverwriteMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		c.Response().Before(func() {
-			setResponseACAOHeaderFromRequest(c)
-		})
-		return next(c)
-	}
 }

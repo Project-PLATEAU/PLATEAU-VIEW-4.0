@@ -71,8 +71,6 @@ func main2(conf *Config) {
 		return c.JSON(http.StatusOK, "pong")
 	}, putil.NoCacheMiddleware)
 
-	e.GET("/proxy/*", proxyHandlerFunc, ACAOHeaderOverwriteMiddleware)
-
 	services := lo.Must(Services(conf))
 	serviceNames := lo.Map(services, func(s *Service, _ int) string { return s.Name })
 	webhookHandlers := []cmswebhook.Handler{}

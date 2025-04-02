@@ -10,6 +10,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/openapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
+	"github.com/eukarya-inc/reearth-plateauview/server/proxy"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
@@ -28,6 +29,7 @@ type Service struct {
 }
 
 var services = [](func(*Config) (*Service, error)){
+	Proxy,
 	OpenAPI,
 	CMSIntegration,
 	SDKAPI,
@@ -53,6 +55,16 @@ func Services(conf *Config) (srv []*Service, _ error) {
 		srv = append(srv, s)
 	}
 	return
+}
+
+func Proxy(*Config) (*Service, error) {
+	return &Service{
+		Name: "proxy",
+		Echo: func(g *echo.Group) error {
+			proxy.Route(g.Group("/proxy"))
+			return nil
+		},
+	}, nil
 }
 
 func OpenAPI(*Config) (*Service, error) {

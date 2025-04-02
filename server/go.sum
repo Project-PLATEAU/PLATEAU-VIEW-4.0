@@ -280,8 +280,8 @@ github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855 h1:9b9YZHEk3ZpPB
 github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855/go.mod h1:/Pq32s0cxrQJJhqgNVJ3VSbLZGAw7G34+acBVjq5AIc=
 github.com/reearth/reearth-cms-api/go v0.0.0-20250129123244-dcf65b6d0af8 h1:TtBfGTxMvupzVMPFbZ3TRF6hXwGjIUUz8wYGipmGAPo=
 github.com/reearth/reearth-cms-api/go v0.0.0-20250129123244-dcf65b6d0af8/go.mod h1:z7w3KJ6WIhWT1dLr9r1oa3apu4KlS9k8caqO81npwio=
-github.com/reearth/reearthx v0.0.0-20250130135542-7860571926f2 h1:SRNjUqHjxUvGUm85PDiy43ZdEu9AJWX95TFRBYRTa+0=
-github.com/reearth/reearthx v0.0.0-20250130135542-7860571926f2/go.mod h1:/ByvE9o0WANHL2nhOyZjOXWwY8cCgze0OmwyNzxcYoA=
+github.com/reearth/reearthx v0.0.0-20250401125639-a916bbd19ba1 h1:XZySw3nQpie387S7X1w9FZboI8EJI17rkXbsgYlhI5M=
+github.com/reearth/reearthx v0.0.0-20250401125639-a916bbd19ba1/go.mod h1:/ByvE9o0WANHL2nhOyZjOXWwY8cCgze0OmwyNzxcYoA=
 github.com/richardlehane/mscfb v1.0.4 h1:WULscsljNPConisD5hR0+OyZjwK46Pfyr6mPu5ZawpM=
 github.com/richardlehane/mscfb v1.0.4/go.mod h1:YzVpcZg9czvAuhk9T+a3avCpcFPMUWm7gK3DypaEsUk=
 github.com/richardlehane/msoleps v1.0.1/go.mod h1:BWev5JBpU9Ko2WAgmZEuiz4/u3ZYTKbjLycmwiWUfWg=

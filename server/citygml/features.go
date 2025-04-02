@@ -17,11 +17,11 @@ import (
 func Features(r io.Reader, spatialIDs []string) ([]string, error) {
 	var filter lod1SolidFilter
 	for _, sid := range spatialIDs {
-		b, err := spatialid.Bounds(sid)
+		v, err := spatialid.Parse(sid)
 		if err != nil {
 			return nil, fmt.Errorf("invalid spatialID: %w", err)
 		}
-		filter.Bounds = append(filter.Bounds, b)
+		filter.Bounds = append(filter.Bounds, v.Bounds())
 	}
 	dec := xmlb.NewDecoder(r, make([]byte, 32*1024))
 	fs := &featureScanner{

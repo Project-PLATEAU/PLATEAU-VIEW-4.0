@@ -59,11 +59,11 @@ func ParseCityGMLFilesQuery(ctx context.Context, conditions string, geocoder Geo
 		}
 	case "s":
 		for s := range strings.SplitSeq(cond, ",") {
-			b3, err := spatialid.Bounds(s)
+			v, err := spatialid.Parse(s)
 			if err != nil {
 				return nil, nil, fmt.Errorf("invalid spatial id: %w", err)
 			}
-			b := b3.ToXY()
+			b := v.Bounds().ToXY()
 			bounds = append(bounds, b)
 		}
 		if len(bounds) > maxBounds {

@@ -95,8 +95,12 @@ export const LayerSpatialIdSection: FC<LayerSpatialIdSectionProps> = ({ layers }
     return [
       {
         id: "spaceIdZoomZFXY",
-        name: "ZFXY",
-        values: features.map(feature => feature.data.zfxyStr),
+        name: "z/f/x/y",
+        values: features.map(feature =>
+          feature.data.zfxyStr?.startsWith("/")
+            ? feature.data.zfxyStr.slice(1)
+            : feature.data.zfxyStr,
+        ),
       },
     ];
   }, [features]);

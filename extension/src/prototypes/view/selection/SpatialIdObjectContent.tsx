@@ -110,11 +110,14 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
   const spaceIdZFXYProperties = useMemo(() => {
     const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return [];
+    const zfxy = feature.data.zfxyStr?.startsWith("/")
+      ? feature.data.zfxyStr.slice(1)
+      : feature.data.zfxyStr;
     return [
       {
         id: "spaceIdZFXY",
-        name: "ZFXY",
-        values: [feature.data.zfxyStr],
+        name: "z/f/x/y",
+        values: [zfxy],
       },
     ];
   }, [features, values]);
