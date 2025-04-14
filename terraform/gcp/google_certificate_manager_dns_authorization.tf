@@ -32,12 +32,6 @@ resource "google_certificate_manager_dns_authorization" "plateau_editor" {
   domain  = local.editor_domain
 }
 
-resource "google_certificate_manager_dns_authorization" "plateau_tiles" {
-  project = data.google_project.project.project_id
-  name    = "plateau-tiles"
-  domain  = local.tiles_domain
-}
-
 resource "google_certificate_manager_dns_authorization" "plateau_geo" {
   project = data.google_project.project.project_id
   name    = "plateau-geo"

@@ -126,7 +126,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		conditions := c.Param(conditionsParamName)
 
-		bounds, filter, err := ParseCityGMLFilesQuery(ctx, conditions, geocoder)
+		bounds, filter, err := parseCityGMLFilesQuery(ctx, conditions, geocoder)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return echo.NewHTTPError(http.StatusNotFound, "not found")
@@ -136,8 +136,13 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		}
 
 		var cityIDs []string
-		for _, b := range bounds {
-			cityIDs = append(cityIDs, h.qt.FindRect(b.QBounds())...)
+		if len(bounds) > 0 {
+			for _, b := range bounds {
+				cityIDs = append(cityIDs, h.qt.FindRect(b.QBounds())...)
+			}
+		} else {
+			// conditions is just a city id
+			cityIDs = strings.Split(conditions, ",")
 		}
 		cityIDs = lo.Uniq(cityIDs)
 

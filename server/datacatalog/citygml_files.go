@@ -19,7 +19,7 @@ type GeoCoder func(ctx context.Context, address string) (quadtree.Bounds, error)
 
 const maxBounds = 30
 
-func ParseCityGMLFilesQuery(ctx context.Context, conditions string, geocoder GeoCoder) (bounds []geo.Bounds2, filter cityGMLFileFilterFunc, err error) {
+func parseCityGMLFilesQuery(ctx context.Context, conditions string, geocoder GeoCoder) (bounds []geo.Bounds2, filter cityGMLFileFilterFunc, err error) {
 	switch conditionType, cond := parseConditions(conditions); conditionType {
 	case "m":
 		for m := range strings.SplitSeq(cond, ",") {

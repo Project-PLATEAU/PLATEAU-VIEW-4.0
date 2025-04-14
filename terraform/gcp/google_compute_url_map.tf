@@ -197,24 +197,6 @@ resource "google_compute_url_map" "editor" {
   }
 }
 
-resource "google_compute_url_map" "plateau_tiles" {
-  project = data.google_project.project.project_id
-  name    = "plateau-tiles"
-
-  default_service = google_compute_backend_service.plateau_tiles.id
-
-  host_rule {
-    hosts        = [local.tiles_domain]
-    path_matcher = "allpaths"
-  }
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = google_compute_backend_service.plateau_tiles.id
-  }
-}
-
-
 resource "google_compute_url_map" "plateau_geo" {
   project = data.google_project.project.project_id
   name    = "plateau-geo"

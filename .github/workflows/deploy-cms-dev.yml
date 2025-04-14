@@ -103,3 +103,14 @@ jobs:
             --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
+
+  e2e_web:
+    needs: [deploy_web, deploy_server_worker]
+    if: needs.deploy_web.result == 'success' && needs.deploy_server_worker.result == 'success'
+    uses: ./.github/workflows/e2e-cms-web.yml
+    with:
+      api_url: ${{ vars.REEARTH_PLATEAU_CMS_DEV_API_URL }}
+      base_url: ${{ vars.REEARTH_PLATEAU_CMS_DEV_BASE_URL }}
+    secrets:
+      REEARTH_E2E_USERNAME: ${{ secrets.REEARTH_PLATEAU_DEV_E2E_USERNAME }}
+      REEARTH_E2E_PASSWORD: ${{ secrets.REEARTH_PLATEAU_DEV_E2E_PASSWORD }}

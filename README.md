@@ -20,7 +20,6 @@ PLATEAU VIEW 4.0 は以下のシステムにより構成されます。
 - [geo](geo): PLATEAU VIEW の一部機能（住所検索など）を動作させるためのサーバーアプリケーション
 - [server](server): CMS と共に動作し PLATEAU の API を提供するサーバーアプリケーション（サイドカーサーバー）
 - [terraform](terraform): PLATEAU VIEW をクラウド上に構築するための Terraform
-- [tiles](tiles): geo からタイル配信の機能のみを独立させたサーバーアプリケーション
 - [tools](tools): PLATEAU CMS でのデータ登録作業や移行作業を補助する CLI ツール
 - [worker](worker): サイドカーサーバーから呼び出されバックグラウンドで非同期に実行されるワーカーアプリケーション
 

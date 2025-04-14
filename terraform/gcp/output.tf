@@ -47,7 +47,3 @@ output "plateauview_sidebar_token" {
 output "plateauview_sidecar_url" {
   value = "https://${local.cms_api_domain}"
 }
-
-output "plateauview_tiles_url" {
-  value = "https://${local.tiles_domain}"
-}

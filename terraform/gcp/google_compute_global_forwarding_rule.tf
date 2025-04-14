@@ -29,15 +29,6 @@ resource "google_compute_global_forwarding_rule" "plateau_cms" {
   target                = google_compute_target_https_proxy.plateau_cms.self_link
 }
 
-resource "google_compute_global_forwarding_rule" "plateau_tiles" {
-  project    = data.google_project.project.project_id
-  ip_address = google_compute_global_address.plateau_tiles.address
-  name       = "plateau-tiles"
-  port_range = "443"
-  target     = google_compute_target_https_proxy.plateau_tiles.self_link
-}
-
-
 resource "google_compute_global_forwarding_rule" "editor" {
   project = data.google_project.project.project_id
 

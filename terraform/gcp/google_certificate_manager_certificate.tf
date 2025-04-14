@@ -129,18 +129,3 @@ resource "google_certificate_manager_certificate" "plateau_reearth" {
     ]
   }
 }
-
-resource "google_certificate_manager_certificate" "plateau_tiles" {
-  project = data.google_project.project.project_id
-  name    = "plateau-tiles"
-
-  managed {
-    domains = [
-      google_certificate_manager_dns_authorization.plateau_tiles.domain,
-    ]
-
-    dns_authorizations = [
-      google_certificate_manager_dns_authorization.plateau_tiles.id,
-    ]
-  }
-}

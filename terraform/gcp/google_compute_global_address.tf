@@ -25,12 +25,6 @@ resource "google_compute_global_address" "cms_cloudbuild" {
   purpose       = "VPC_PEERING"
 }
 
-
-resource "google_compute_global_address" "plateau_tiles" {
-  project = data.google_project.project.project_id
-  name    = "plateau-tiles"
-}
-
 resource "google_compute_global_address" "editor" {
   project = data.google_project.project.project_id
   name    = "editor"

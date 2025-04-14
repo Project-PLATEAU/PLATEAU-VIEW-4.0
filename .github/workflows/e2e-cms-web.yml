@@ -1,0 +1,25 @@
+name: E2E CMS Web
+on:
+  workflow_call:
+    inputs:
+      api_url:
+        required: true
+        type: string
+      base_url:
+        required: true
+        type: string
+    secrets:
+      REEARTH_E2E_USERNAME:
+        required: true
+      REEARTH_E2E_PASSWORD:
+        required: true
+jobs:
+  call-workflow:
+    uses: reearth/reearth-cms/.github/workflows/e2e_web.yml@main
+    with:
+      api_url: ${{ inputs.api_url }}
+      base_url: ${{ inputs.base_url }}
+      branch: release
+    secrets:
+      REEARTH_WEB_E2E_USERNAME: ${{ secrets.REEARTH_E2E_USERNAME }}
+      REEARTH_WEB_E2E_PASSWORD: ${{ secrets.REEARTH_E2E_PASSWORD }}

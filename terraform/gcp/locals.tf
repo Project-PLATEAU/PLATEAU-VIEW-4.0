@@ -39,7 +39,6 @@ locals {
   cerbos_domain          = "cerbos.${var.domain}"
   geo_domain             = "geo.${var.domain}"
   plateauview_api_domain = "api.${var.domain}"
-  tiles_domain           = "tiles.${var.domain}"
 }
 
 locals {

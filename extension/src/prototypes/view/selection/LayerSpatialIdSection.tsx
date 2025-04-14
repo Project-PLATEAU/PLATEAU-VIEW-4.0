@@ -84,7 +84,7 @@ export const LayerSpatialIdSection: FC<LayerSpatialIdSectionProps> = ({ layers }
     return [
       {
         id: "spaceId",
-        name: "空間ID",
+        name: "タイルハッシュ",
         values: features.map(feature => feature.data.id),
       },
     ];
